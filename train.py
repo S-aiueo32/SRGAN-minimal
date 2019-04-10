@@ -58,8 +58,8 @@ for epoch in range(1, opt.num_epochs + 1):
         real_out = netD(hr_img).mean()
         fake_out = netD(sr_img).mean()
         d_loss = 1 - real_out + fake_out
-        d_loss.backward()
-        optimizerD.step(retain_graph=True)
+        d_loss.backward(retain_graph=True)
+        optimizerD.step()
 
         # Update G
         optimizerG.zero_grad()
