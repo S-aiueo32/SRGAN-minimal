@@ -1,6 +1,7 @@
 import torch
 import torch.optim as optim
 from torch.utils.data import DataLoader
+from torchvision.utils import save_image
 
 import pytorch_ssim
 from dataset import DatasetFromFolder, DatasetFromFolderEval
@@ -69,6 +70,8 @@ for epoch in range(1, opt.num_epochs + 1):
         
 
         print('[Epoch{}({}/{})] G_Loss: {:.6f}, D_Loss: {:.6f}'.format(epoch, iteration, len(train_loader), g_loss, d_loss))
+
+    save_image(sr_img, '{}.png'.format(epoch))
 
     netG.eval()
     with torch.no_grad():
