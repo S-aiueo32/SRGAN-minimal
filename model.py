@@ -68,22 +68,15 @@ class Discriminator(nn.Module):
             nn.BatchNorm2d(512),
             nn.LeakyReLU(0.2),
 
-            #Flatten(),
-            #nn.Linear(512 * (patch_size // 2 ** 4) ** 2, 1024),
-            #nn.LeakyReLU(0.2),
-            #nn.Linear(1024, 1),
-
-            nn.AdaptiveAvgPool2d(1),
-            nn.Conv2d(512, 1024, kernel_size=1),
+            Flatten(),
+            nn.Linear(512 * (patch_size // 2 ** 4) ** 2, 1024),
             nn.LeakyReLU(0.2),
-            nn.Conv2d(1024, 1, kernel_size=1),
-
+            nn.Linear(1024, 1),
             nn.Sigmoid()
         )
 
     def forward(self, x):
-        batch_size = x.shape[0]
-        return self.net(x).view(batch_size)
+        return self.net(x)
 
 
 class ResidualBlock(nn.Module):

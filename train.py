@@ -13,6 +13,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--patch_size', type=int, default=96)
 parser.add_argument('--upscale_factor', type=int, default=4, choices=[2, 4, 8])
 parser.add_argument('--num_epochs', type=int, default=100)
+parser.add_argument('--adv_coefficient', type=int, default=1e-3)
 parser.add_argument('--cuda', action='store_true', default=False)
 opt = parser.parse_args()
 
@@ -56,9 +57,8 @@ for epoch in range(1, opt.num_epochs + 1):
         optimizerD.zero_grad()
         real_out = netD(hr_img).mean()
         fake_out = netD(sr_img).mean()
-        # d_loss = criterionD(real_out, fake_out)
         d_loss = 1 - real_out + fake_out
-        d_loss.backward(retain_graph=True)
+        d_loss.backward()
         optimizerD.step()
 
         # Update G
@@ -67,13 +67,12 @@ for epoch in range(1, opt.num_epochs + 1):
         g_loss.backward()
         optimizerG.step()
 
-        
-
         print('[Epoch{}({}/{})] G_Loss: {:.6f}, D_Loss: {:.6f}'.format(epoch, iteration, len(train_loader), g_loss, d_loss))
 
-    save_image(sr_img, '{}.png'.format(epoch))
+    save_image(sr_img, './tmp/{}.png'.format(epoch))
 
     netG.eval()
     with torch.no_grad():
         for (lr_img, hr_img, filename) in val_loader:
-            print(lr_img.shape, hr_img.shape, filename)
+            #print(lr_img.shape, hr_img.shape, filename)
+            pass

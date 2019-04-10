@@ -22,9 +22,9 @@ class VGGLoss(nn.Module):
         super(VGGLoss, self).__init__()
         vgg = vgg19(pretrained=True)
         if vgg_type == 'vgg22':
-            self.net = nn.Sequential(*list(vgg.features[:7])).eval()
+            self.net = nn.Sequential(*list(vgg.features[:9])).eval()
         elif vgg_type == 'vgg54':
-            self.net = nn.Sequential(*list(vgg.features[:30])).eval()
+            self.net = nn.Sequential(*list(vgg.features[:37])).eval()
 
         for param in self.net.parameters():
             param.requires_grad = False
