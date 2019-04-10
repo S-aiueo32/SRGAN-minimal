@@ -16,7 +16,7 @@ parser.add_argument('--cuda', action='store_true', default=False)
 opt = parser.parse_args()
 
 device = torch.device(
-    'cuda' if opt.cuda and torch.cuda.is_available() else 'cpu')
+    'cuda:0' if opt.cuda and torch.cuda.is_available() else 'cpu')
 
 print('===> Loading Train Dataset')
 train_set = DatasetFromFolder(image_dir='./data/General-100/train',
@@ -45,14 +45,14 @@ optimizerD = optim.Adam(netD.parameters())
 for epoch in range(1, opt.num_epochs + 1):
     netG.train(), netD.train()
     for iteration, (lr_img, hr_img) in enumerate(train_loader, 1):
-        lr_img.to(device)
-        hr_img.to(device)
+        lr_img = lr_img.to(device)
+        hr_img = hr_img.to(device)
 
         # Generate image
         sr_img = netG(lr_img)
 
         # Update D
-        netD.zero_grad()
+        optimizerD.zero_grad()
         real_out = netD(hr_img).mean()
         fake_out = netD(sr_img).mean()
         # d_loss = criterionD(real_out, fake_out)
@@ -61,7 +61,7 @@ for epoch in range(1, opt.num_epochs + 1):
         optimizerD.step()
 
         # Update G
-        netG.zero_grad()
+        criterionG.zero_grad()
         g_loss = criterionG(sr_img, hr_img, fake_out)
         g_loss.backward()
         optimizerG.step()
