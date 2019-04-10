@@ -47,12 +47,16 @@ for epoch in range(1, opt.num_epochs + 1):
     for iteration, (lr_img, hr_img) in enumerate(train_loader, 1):
         lr_img.to(device)
         hr_img.to(device)
+
+        # Generate image
         sr_img = netG(lr_img)
 
+        # Update D
         netD.zero_grad()
-        real_out = netD(hr_img)
-        fake_out = netD(sr_img)
-        d_loss = criterionD(real_out, fake_out)
+        real_out = netD(hr_img).mean()
+        fake_out = netD(sr_img).mean()
+        # d_loss = criterionD(real_out, fake_out)
+        d_loss = 1 - real_out + fake_out
         d_loss.backward(retain_graph=True)
         optimizerD.step()
 
@@ -62,8 +66,9 @@ for epoch in range(1, opt.num_epochs + 1):
         g_loss.backward()
         optimizerG.step()
 
-        print('train')
-        break
+        
+
+        print('[Epoch{}({}/{})] G_Loss: {:.6f}, D_Loss: {:.6f}'.format(epoch, iteration, len(train_loader), g_loss, d_loss))
 
     netG.eval()
     with torch.no_grad():

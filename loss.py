@@ -37,4 +37,4 @@ class VGGLoss(nn.Module):
 
 class DiscriminatorLoss(nn.Module):
     def __call__(self, real_out, fake_out):
-        return 1 - real_out.mean() + fake_out.mean()
+        return (1 - real_out) + fake_out
