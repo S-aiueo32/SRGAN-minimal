@@ -53,12 +53,6 @@ for epoch in range(1, opt.num_epochs + 1):
         # Generate image
         sr_img = netG(lr_img)
 
-        # Update G
-        optimizerG.zero_grad()
-        g_loss = criterionG(sr_img, hr_img, fake_out)
-        g_loss.backward()
-        optimizerG.step()
-
         # Update D
         optimizerD.zero_grad()
         real_out = netD(hr_img).mean()
@@ -66,6 +60,12 @@ for epoch in range(1, opt.num_epochs + 1):
         d_loss = 1 - real_out + fake_out
         d_loss.backward(retain_graph=True)
         optimizerD.step()
+
+        # Update G
+        optimizerG.zero_grad()
+        g_loss = criterionG(sr_img, hr_img, fake_out)
+        g_loss.backward()
+        optimizerG.step()
 
         print('[Epoch{}({}/{})] G_Loss: {:.6f}, D_Loss: {:.6f}'.format(epoch, iteration, len(train_loader), g_loss, d_loss))
 
