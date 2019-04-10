@@ -13,7 +13,7 @@ class GeneratorLoss(nn.Module):
 
     def forward(self, fake_img, target_img, fake_label):
         content_loss = self.content_loss(fake_img, target_img)
-        adversarial_loss = -fake_label.log().mean()
+        adversarial_loss = (1 - fake_label).mean()
         return content_loss + self.adv_coefficient * adversarial_loss
 
 
