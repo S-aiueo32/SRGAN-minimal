@@ -18,7 +18,7 @@ def padding(img, scale):
 class DatasetFromFolder(Dataset):
     def __init__(self, image_dir, patch_size, upscale_factor, data_augmentation=True):
         super(DatasetFromFolder, self).__init__()
-        self.filenames = [f for f in Path(image_dir).glob('*.bmp')]
+        self.filenames = [f for f in Path(image_dir).glob('*.jpg')]
         self.patch_size = patch_size
         self.upscale_factor = upscale_factor
         self.data_augmentation = data_augmentation
@@ -39,7 +39,7 @@ class DatasetFromFolder(Dataset):
         down_size = (self.patch_size // self.upscale_factor,) * 2
         input_img = target_img.resize(down_size, Image.BICUBIC)
 
-        return F.to_tensor(input_img), F.to_tensor(target_img)
+        return F.to_tensor(input_img), F.to_tensor(target_img) * 2 - 1
 
     def __len__(self):
         return len(self.filenames)
@@ -48,7 +48,7 @@ class DatasetFromFolder(Dataset):
 class DatasetFromFolderEval(Dataset):
     def __init__(self, image_dir, upscale_factor):
         super(DatasetFromFolderEval, self).__init__()
-        self.filenames = [f for f in Path(image_dir).glob('*.bmp')]
+        self.filenames = [f for f in Path(image_dir).glob('*.jpg')]
         self.upscale_factor = upscale_factor
 
     def __getitem__(self, index):

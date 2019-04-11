@@ -22,15 +22,14 @@ class Generator(nn.Module):
         )
         self.tail = nn.Sequential(
             *[UpsampleBLock(64, 2) for _ in range(int(log2(scale_factor)))],
-            nn.Conv2d(64, 3, kernel_size=9, padding=4),
-            nn.Tanh()
+            nn.Conv2d(64, 3, kernel_size=9, padding=4)
         )
 
     def forward(self, x):
         x = self.head(x)
         x = self.body(x) + x
         x = self.tail(x)
-        return (x + 1) / 2
+        return x
 
 
 class Discriminator(nn.Module):
@@ -110,4 +109,4 @@ class UpsampleBLock(nn.Module):
 
 class Flatten(nn.Module):
     def forward(self, x):
-        return x.view(1, -1)
+        return x.view(x.shape[0], -1)
