@@ -1,6 +1,5 @@
 from math import log2
 
-import torch.nn.functional as F
 from torch import nn
 
 
@@ -12,24 +11,21 @@ class Generator(nn.Module):
             nn.PReLU()
         )
         self.body = nn.Sequential(
-            ResidualBlock(64),
-            ResidualBlock(64),
-            ResidualBlock(64),
-            ResidualBlock(64),
-            ResidualBlock(64),
+            *[ResidualBlock(64) for _ in range(16)],
             nn.Conv2d(64, 64, kernel_size=3, padding=1),
             nn.PReLU()
         )
         self.tail = nn.Sequential(
             *[UpsampleBLock(64, 2) for _ in range(int(log2(scale_factor)))],
-            nn.Conv2d(64, 3, kernel_size=9, padding=4)
+            nn.Conv2d(64, 3, kernel_size=9, padding=4),
+            nn.Tanh()
         )
 
     def forward(self, x):
         x = self.head(x)
         x = self.body(x) + x
         x = self.tail(x)
-        return x
+        return (x + 1) / 2
 
 
 class Discriminator(nn.Module):
