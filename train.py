@@ -121,13 +121,13 @@ for epoch in range(1, opt.num_epochs + 1):
             input_img = input_img.to(device)
             real_img = real_img.to(device)
             fake_img = netG(input_img)
-            
+
             val_psnr += 10 * log10(1 / mse_loss(fake_img, real_img).item())
             val_ssim += ssim(fake_img, real_img).item()
 
             if iteration <= 3:
                 img_pool.append([fake_img, filename])
-            
+
             if iteration == len(val_loader):
                 val_psnr /= len(val_loader)
                 val_ssim /= len(val_loader)
