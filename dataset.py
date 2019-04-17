@@ -18,7 +18,7 @@ def padding(img, scale):
 class DatasetFromFolder(Dataset):
     def __init__(self, image_dir, patch_size, upscale_factor, data_augmentation=True):
         super(DatasetFromFolder, self).__init__()
-        self.filenames = [f for f in image_dir.glob('*.jpg')]
+        self.filenames = [f for f in image_dir.glob('*') if f.suffix in ['.jpg', '.png']]
         self.patch_size = patch_size
         self.upscale_factor = upscale_factor
         self.data_augmentation = data_augmentation
@@ -48,7 +48,7 @@ class DatasetFromFolder(Dataset):
 class DatasetFromFolderEval(Dataset):
     def __init__(self, image_dir, upscale_factor):
         super(DatasetFromFolderEval, self).__init__()
-        self.filenames = [f for f in image_dir.glob('*.jpg')]
+        self.filenames = [f for f in image_dir.glob('*') if f.suffix in ['.jpg', '.png']]
         self.upscale_factor = upscale_factor
 
     def __getitem__(self, index):

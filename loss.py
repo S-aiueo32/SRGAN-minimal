@@ -9,7 +9,6 @@ class GeneratorLoss(nn.Module):
         self.content_loss = VGGLoss(loss_type)
         self.mse_loss = nn.MSELoss()
         self.adv_coefficient = adv_coefficient
-        self.bce_loss = nn.BCELoss()
 
     def forward(self, d_out_fake, real_img, fake_img):
         mse_loss = self.mse_loss(real_img, fake_img)

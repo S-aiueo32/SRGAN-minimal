@@ -82,16 +82,12 @@ for epoch in range(1, opt.num_epochs + 1):
         d_out_real = netD(real_img)
         d_out_fake = netD(fake_img)
         d_loss = criterionD(d_out_real, d_out_fake)
-        if epoch > opt.pretrain_epochs:
-            d_loss.backward(retain_graph=True)
-            optimizerD.step()
+        d_loss.backward(retain_graph=True)
+        optimizerD.step()
 
         # Update G
         optimizerG.zero_grad()
-        if epoch <= opt.pretrain_epochs:
-            g_loss = mse_loss(real_img, fake_img)
-        else:
-            g_loss = criterionG(d_out_fake, real_img, fake_img)
+        g_loss = criterionG(d_out_fake, real_img, fake_img)
         g_loss.backward()
         optimizerG.step()
 
@@ -110,9 +106,12 @@ for epoch in range(1, opt.num_epochs + 1):
 
         global_step += 1
 
-    writer.add_image('train/sr_img', make_grid(fake_img[:9], nrow=3), epoch)
-    writer.add_image('train/hr_img', make_grid(real_img[:9], nrow=3), epoch)
-    save_image(grid_img, sample_dir / 'train_result_epoch{:05}.png'.format(epoch), nrow=1)
+    grid_sr = make_grid(fake_img[:9], nrow=3)
+    grid_hr = make_grid(real_img[:9], nrow=3)
+    writer.add_image('train/sr_img', grid_sr, epoch)
+    writer.add_image('train/hr_img', grid_hr, epoch)
+    save_image(grid_sr, sample_dir / 'train_result_epoch{:05}_sr.png'.format(epoch), nrow=1)
+    save_image(grid_hr, sample_dir / 'train_result_epoch{:05}_hr.png'.format(epoch), nrow=1)
 
     netG.eval()
     with torch.no_grad():
@@ -135,9 +134,9 @@ for epoch in range(1, opt.num_epochs + 1):
 
         for i, (img, filename) in enumerate(img_pool):
             print('[Sample] {} ===>  eval_result_epoch{:05}_{:02}.png'.format(filename, epoch, i))
+            writer.add_images('val/sr_img_{}'.format(i), img, epoch)
             save_image(img, sample_dir / 'eval_result_epoch{:05}_{:02}.png'.format(epoch, i), nrow=1)
-        
-        writer.add_images('val/sr_img', torch.cat([x for x, _ in img_pool], 0), epoch)
+            
         writer.add_scalar('val/psnr', val_psnr, epoch)
         writer.add_scalar('val/ssim', val_ssim, epoch)
         print('===> [Validation score][Epoch {}] PSNR:{:.6f}, SSIM:{:.6f}'.format(epoch, val_psnr, val_ssim))
